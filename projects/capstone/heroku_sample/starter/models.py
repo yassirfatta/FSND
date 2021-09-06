@@ -19,23 +19,60 @@ def setup_db(app, database_path=database_path):
     db.create_all()
 
 
+def db_drop_and_create_all():
+    db.drop_all()
+    db.create_all()
+    # add one demo row which is helping in POSTMAN test
+    actor = Actor(
+        name='Will Smith',
+        gender='male'
+    )
+    actor.insert()
+
+    movie = Movie(
+    name = 'Men In Black',
+    genre = 'Sci fi'
+    )
+    movie.insert()
+
 '''
-Person
-Have title and release year
+Actor
+Have name and gender
 '''
-class Person(db.Model):  
-  __tablename__ = 'People'
+class Actor(db.Model):  
+  __tablename__ = 'actors'
 
   id = Column(Integer, primary_key=True)
   name = Column(String)
-  catchphrase = Column(String)
+  gender = Column(String)
 
-  def __init__(self, name, catchphrase=""):
+  def __init__(self, name, gender):
     self.name = name
-    self.catchphrase = catchphrase
+    self.gender = gender
 
   def format(self):
     return {
       'id': self.id,
       'name': self.name,
-      'catchphrase': self.catchphrase}
+      'gender': self.gender}
+
+'''
+Movie
+Have name and genre
+'''
+class Movie(db.Model):  
+  __tablename__ = 'movies'
+
+  id = Column(Integer, primary_key=True)
+  name = Column(String)
+  genre = Column(String)
+
+  def __init__(self, name, genre):
+    self.name = name
+    self.genre = genre
+
+  def format(self):
+    return {
+      'id': self.id,
+      'name': self.name,
+      'genre': self.genre}
