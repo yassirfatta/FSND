@@ -3,6 +3,9 @@ from flask_sqlalchemy import SQLAlchemy
 import json
 import os
 
+from sqlalchemy.orm import backref, relationship
+from sqlalchemy.sql.schema import ForeignKey
+
 database_name = "capstonedb"
 database_path = "postgresql://{}/{}".format('localhost:5432', database_name)
 db = SQLAlchemy()
@@ -45,6 +48,7 @@ class Actor(db.Model):
   id = Column(Integer, primary_key=True)
   name = Column(String)
   gender = Column(String)
+  movie_id = Column(Integer, ForeignKey('movies.id'))
 
   def __init__(self, name, gender):
     self.name = name
@@ -66,6 +70,7 @@ class Movie(db.Model):
   id = Column(Integer, primary_key=True)
   name = Column(String)
   genre = Column(String)
+  actors = relationship('Actor', backref='movies', lazy=True)
 
   def __init__(self, name, genre):
     self.name = name

@@ -1,4 +1,5 @@
 import os
+import json
 from flask import Flask, request, abort, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
@@ -20,6 +21,7 @@ class AuthError(Exception):
     def __init__(self, error, status_code):
         self.error = error
         self.status_code = status_code
+
 
 ## Auth Header
 
@@ -67,7 +69,7 @@ def check_permissions(permission, payload):
         }, 403)
     return True
 
-# raise Exception('Not Implemented')
+    # raise Exception('Not Implemented')
 
 def verify_decode_jwt(token):
     jsonurl = urlopen(f'https://{AUTH0_DOMAIN}/.well-known/jwks.json')
@@ -150,13 +152,13 @@ def create_app(test_config=None):
 APP = create_app()
 
 if __name__ == '__main__':
-    APP.run(host='0.0.0.0', port=8080, debug=True)
+    APP.run(host='http://127.0.0.1', port=5000, debug=True)
 
 # ROUTES
 '''
     GET /movies
 '''
-@app.route('/movies')
+@APP.route('/movies')
 @requires_auth('get:movies')
 def get_movies(payload):
     print(payload)
@@ -175,7 +177,7 @@ def get_movies(payload):
 '''
     GET /actors
 '''
-@app.route('/actors')
+@APP.route('/actors')
 @requires_auth('get:actord')
 def get_actors(payload):
     print(payload)
@@ -193,7 +195,7 @@ def get_actors(payload):
 '''
     POST /movies
 '''
-@app.route('/movies')
+@APP.route('/movies')
 @requires_auth('post:movies')
 def post_movies(payload):
     print(payload)
@@ -214,7 +216,7 @@ def post_movies(payload):
 '''
     POST /actors
 '''
-@app.route('/actors')
+@APP.route('/actors')
 @requires_auth('post:actors')
 def post_actors(payload):
     print(payload)
@@ -236,7 +238,7 @@ def post_actors(payload):
 '''
     PATCH /movies/<id>
 '''
-@app.route('/movies/<id>')
+@APP.route('/movies/<id>')
 @requires_auth('patch:movies')
 def patch_movies(id, payload):
     print(payload)
@@ -258,7 +260,7 @@ def patch_movies(id, payload):
 '''
     PATCH /actors/<id>
 '''
-@app.route('/actors/<id>')
+@APP.route('/actors/<id>')
 @requires_auth('patch:actors')
 def patch_actors(id, payload):
     print(payload)
@@ -280,7 +282,7 @@ def patch_actors(id, payload):
 '''
     DELETE /movies/<id>
 '''
-@app.route('/movies/<int:id>')
+@APP.route('/movies/<int:id>')
 @requires_auth('delete:movies')
 def delete_movies(id, payload):
     print(payload)
@@ -299,7 +301,7 @@ def delete_movies(id, payload):
 '''
     DELETE /actors/<id>
 '''
-@app.route('/actors/<int:id>')
+@APP.route('/actors/<int:id>')
 @requires_auth('delete:actors')
 def delete_actors(id, payload):
     print(payload)
@@ -320,7 +322,7 @@ def delete_actors(id, payload):
 Error handling for unprocessable entity
 '''
 
-@app.errorhandler(422)
+@APP.errorhandler(422)
 def unprocessable(error):
     return jsonify({
         "success": False,
@@ -332,7 +334,7 @@ def unprocessable(error):
 '''
 Error handler for unavailable resources 
 '''
-@app.errorhandler(404)
+@APP.errorhandler(404)
 def resource_not_found(error):
     return jsonify({
         "success": False,
@@ -343,7 +345,7 @@ def resource_not_found(error):
 '''
 Error handler for AuthError
 '''
-@app.errorhandler(AuthError)
+@APP.errorhandler(AuthError)
 def resource_not_found(error):
     return jsonify({
         "success": False,
