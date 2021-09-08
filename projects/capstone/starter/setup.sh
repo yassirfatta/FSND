@@ -1,1 +1,1 @@
-SQLALCHEMY_DATABASE_URI = 'postgresql://postgres@localhost:5432/capstonedb'
+DATABASE_URL = 'postgresql://postgres@localhost:5432/capstonedb'
