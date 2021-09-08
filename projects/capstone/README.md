@@ -2,7 +2,7 @@
 
 ## Heroku Application Url
 
-https://yassir-casting-agency.herokuapp.com/ 
+https://yassir-casting-agency.herokuapp.com/  |
 https://git.heroku.com/yassir-casting-agency.git
 
 ## Auth0 Accounts
