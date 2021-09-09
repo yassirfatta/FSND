@@ -7,7 +7,7 @@ from sqlalchemy.orm import backref, relationship
 from sqlalchemy.sql.schema import ForeignKey
 
 database_name = "capstonedb"
-database_path = "postgresql://{}/{}".format('localhost:5432', database_name)
+database_path = "postgresql://{}@{}/{}".format('postgres','localhost:5432', database_name)
 db = SQLAlchemy()
 
 '''
@@ -20,23 +20,6 @@ def setup_db(app, database_path=database_path):
     db.app = app
     db.init_app(app)
     db.create_all()
-
-
-def db_drop_and_create_all():
-    db.drop_all()
-    db.create_all()
-    # add one demo row which is helping in POSTMAN test
-    actor = Actor(
-        name='Will Smith',
-        gender='male'
-    )
-    actor.insert()
-
-    movie = Movie(
-    name = 'Men In Black',
-    genre = 'Sci fi'
-    )
-    movie.insert()
 
 '''
 Actor

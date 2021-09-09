@@ -157,214 +157,214 @@ def requires_auth(permission=''):
 
 # create and configure the app
 
-# def create_app(test_config=None):
-app = Flask(__name__)
-CORS(app)
-setup_db(app)
+def create_app(test_config=None):
+    app = Flask(__name__)
+    CORS(app)
+    setup_db(app)
 
-# ROUTES
-'''
-    GET /movies
-'''
-@app.route('/movies', methods = ['GET'])
-@requires_auth('get:movies')
-def get_movies(payload):
-    print(payload)
-    movies = []
-    try:
-        movies = Movie.query.name
-        if len(movies) == 0:
-            abort(404)
-    except:
-        print(sys.exc_info())
+    # ROUTES
+    '''
+        GET /movies
+    '''
+    @app.route('/movies', methods = ['GET'])
+    @requires_auth('get:movies')
+    def get_movies(payload):
+        print(payload)
+        movies = []
+        try:
+            movies = Movie.query.name
+            if len(movies) == 0:
+                abort(404)
+        except:
+            print(sys.exc_info())
 
-    return jsonify({
-        "success": True, 
-        "movies": movies}), 200
+        return jsonify({
+            "success": True, 
+            "movies": movies}), 200
 
-'''
-    GET /actors
-'''
-@app.route('/actors', methods = ['GET'])
-@requires_auth('get:actors')
-def get_actors(payload):
-    print(payload)
-    actors = []
-    try:
-        actors = Actor.query.name
-        if len(actors) == 0:
-            abort(404)
-    except:
-        print(sys.exc_info())
+    '''
+        GET /actors
+    '''
+    @app.route('/actors', methods = ['GET'])
+    @requires_auth('get:actors')
+    def get_actors(payload):
+        print(payload)
+        actors = []
+        try:
+            actors = Actor.query.name
+            if len(actors) == 0:
+                abort(404)
+        except:
+            print(sys.exc_info())
 
-    return jsonify({
-        "success": True, 
-        "actors": actors}), 200
+        return jsonify({
+            "success": True, 
+            "actors": actors}), 200
 
-'''
-    POST /movies
-'''
-@app.route('/movies', methods = ['POST'])
-@requires_auth('post:movies')
-def post_movies(payload):
-    print(payload)
-    movie = []
-    data = request.get_json()
-    try:
-        movie = Movie(
-            name=data['name'],
-            gente=data['genre']
-        )
-        movie.insert()
-    except:
-        print(sys.exc_info())
+    '''
+        POST /movies
+    '''
+    @app.route('/movies', methods = ['POST'])
+    @requires_auth('post:movies')
+    def post_movies(payload):
+        print(payload)
+        movie = []
+        data = request.get_json()
+        try:
+            movie = Movie(
+                name=data['name'],
+                gente=data['genre']
+            )
+            movie.insert()
+        except:
+            print(sys.exc_info())
 
-    return jsonify({
-        "success": True, 
-        "movies": movie}), 200
+        return jsonify({
+            "success": True, 
+            "movies": movie}), 200
 
-'''
-    POST /actors
-'''
-@app.route('/actors', methods = ['POST'])
-@requires_auth('post:actors')
-def post_actors(payload):
-    print(payload)
-    actor = []
-    data = request.get_json()
-    try:
-        actor = Actor(
-            name=data['name'],
-            gender=data['gender']
-        )
-        actor.insert()
-    except:
-        print(sys.exc_info())
+    '''
+        POST /actors
+    '''
+    @app.route('/actors', methods = ['POST'])
+    @requires_auth('post:actors')
+    def post_actors(payload):
+        print(payload)
+        actor = []
+        data = request.get_json()
+        try:
+            actor = Actor(
+                name=data['name'],
+                gender=data['gender']
+            )
+            actor.insert()
+        except:
+            print(sys.exc_info())
 
-    return jsonify({
-        "success": True, 
-        "actors": actor}), 200
+        return jsonify({
+            "success": True, 
+            "actors": actor}), 200
 
 
-'''
-    PATCH /movies/<id>
-'''
-@app.route('/movies/<id>', methods = ['PATCH'])
-@requires_auth('patch:movies')
-def patch_movies(id, payload):
-    print(payload)
-    body = request.get_json()
-    try:
-        movie = Movie.query.filter(Movie.id == id)
+    '''
+        PATCH /movies/<id>
+    '''
+    @app.route('/movies/<id>', methods = ['PATCH'])
+    @requires_auth('patch:movies')
+    def patch_movies(id, payload):
+        print(payload)
+        body = request.get_json()
+        try:
+            movie = Movie.query.filter(Movie.id == id)
+            if movie is None:
+                abort(404)
+            movie.name = body.get('name')
+            movie.genre = body.get('genre')
+            movie.update()
+        except:
+            print(sys.exc_info())
+
+        return jsonify({
+            "success": True, 
+            "movies": movie}), 200
+
+    '''
+        PATCH /actors/<id>
+    '''
+    @app.route('/actors/<id>', methods = ['PATCH'])
+    @requires_auth('patch:actors')
+    def patch_actors(id, payload):
+        print(payload)
+        body = request.get_json()
+        try:
+            actor = Actor.query.filter(Actor.id == id)
+            if actor is None:
+                abort(404)
+            actor.name = body.get('name')
+            actor.gender = body.get('gender')
+            actor.update()
+        except:
+            print(sys.exc_info())
+
+        return jsonify({
+            "success": True, 
+            "actors": actor}), 200
+
+    '''
+        DELETE /movies/<id>
+    '''
+    @app.route('/movies/<int:id>', methods = ['DELETE'])
+    @requires_auth('delete:movies')
+    def delete_movies(id, payload):
+        print(payload)
+        movie = Movie.query.get(id)
         if movie is None:
             abort(404)
-        movie.name = body.get('name')
-        movie.genre = body.get('genre')
-        movie.update()
-    except:
-        print(sys.exc_info())
+        try:
+            movie.delete()
+        except:
+            abort(422)
 
-    return jsonify({
-        "success": True, 
-        "movies": movie}), 200
+        return jsonify({
+            "success": True, 
+            "movies": movie}), 200
 
-'''
-    PATCH /actors/<id>
-'''
-@app.route('/actors/<id>', methods = ['PATCH'])
-@requires_auth('patch:actors')
-def patch_actors(id, payload):
-    print(payload)
-    body = request.get_json()
-    try:
-        actor = Actor.query.filter(Actor.id == id)
+    '''
+        DELETE /actors/<id>
+    '''
+    @app.route('/actors/<int:id>', methods = ['DELETE'])
+    @requires_auth('delete:actors')
+    def delete_actors(id, payload):
+        print(payload)
+        actor = Actor.query.get(id)
         if actor is None:
             abort(404)
-        actor.name = body.get('name')
-        actor.gender = body.get('gender')
-        actor.update()
-    except:
-        print(sys.exc_info())
+        try:
+            actor.delete()
+        except:
+            abort(422)
 
-    return jsonify({
-        "success": True, 
-        "actors": actor}), 200
+        return jsonify({
+            "success": True, 
+            "actors": actor}), 200
 
-'''
-    DELETE /movies/<id>
-'''
-@app.route('/movies/<int:id>', methods = ['DELETE'])
-@requires_auth('delete:movies')
-def delete_movies(id, payload):
-    print(payload)
-    movie = Movie.query.get(id)
-    if movie is None:
-        abort(404)
-    try:
-        movie.delete()
-    except:
-        abort(422)
+    # Error Handling
+    '''
+    Error handling for unprocessable entity
+    '''
 
-    return jsonify({
-        "success": True, 
-        "movies": movie}), 200
-
-'''
-    DELETE /actors/<id>
-'''
-@app.route('/actors/<int:id>', methods = ['DELETE'])
-@requires_auth('delete:actors')
-def delete_actors(id, payload):
-    print(payload)
-    actor = Actor.query.get(id)
-    if actor is None:
-        abort(404)
-    try:
-        actor.delete()
-    except:
-        abort(422)
-
-    return jsonify({
-        "success": True, 
-        "actors": actor}), 200
-
-# Error Handling
-'''
-Error handling for unprocessable entity
-'''
-
-@app.errorhandler(422)
-def unprocessable(error):
-    return jsonify({
-        "success": False,
-        "error": 422,
-        "message": "unprocessable"
-    }), 422
+    @app.errorhandler(422)
+    def unprocessable(error):
+        return jsonify({
+            "success": False,
+            "error": 422,
+            "message": "unprocessable"
+        }), 422
 
 
-'''
-Error handler for unavailable resources 
-'''
-@app.errorhandler(404)
-def resource_not_found(error):
-    return jsonify({
-        "success": False,
-        "error": 404,
-        "message": "resource not found"
-    }), 404
+    '''
+    Error handler for unavailable resources 
+    '''
+    @app.errorhandler(404)
+    def resource_not_found(error):
+        return jsonify({
+            "success": False,
+            "error": 404,
+            "message": "resource not found"
+        }), 404
 
-'''
-Error handler for AuthError
-'''
-@app.errorhandler(AuthError)
-def resource_not_found(error):
-    return jsonify({
-        "success": False,
-        "error": 400,
-        "message": "invalid header"
-    }), 400
-    # return app
+    '''
+    Error handler for AuthError
+    '''
+    @app.errorhandler(AuthError)
+    def resource_not_found(error):
+        return jsonify({
+            "success": False,
+            "error": 400,
+            "message": "invalid header"
+        }), 400
+    return app
 
-# app = create_app()
-# if __name__ == '__main__':
-#     app.run(host='http://127.0.0.1', port=5000, debug=True)
+app = create_app()
+if __name__ == '__main__':
+    app.run(host='http://127.0.0.1', port=5000, debug=True)
